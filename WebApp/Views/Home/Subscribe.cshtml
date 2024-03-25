@@ -1,0 +1,17 @@
+﻿@using Infrastructure.Entities
+@model SubscriberEntity
+
+
+@{
+    ViewData["Title"] = "Subscribe";
+}
+
+@if (bool.Parse(ViewData["Subscribe"]!.ToString()!))
+{
+    <div>You are subscribed</div>
+}
+
+<form asp-action="Subscribe" asp-controller="Home" method="post">
+    <input asp-for="@Model.Email" />
+    <button type="submit">Subscribe</button>
+</form>
