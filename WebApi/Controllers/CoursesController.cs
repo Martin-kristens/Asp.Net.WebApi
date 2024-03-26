@@ -1,67 +1,79 @@
-﻿using Infrastructure.Contexts;
-using Infrastructure.Entities;
+﻿using Infrastructure.Dtos;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Dtos;
-using WebApi.Models;
+using System.Diagnostics;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CoursesController(ICourseRepository courseRepository, ICourseService courseService) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CoursesController(DataContext context) : ControllerBase
+    private readonly ICourseRepository _courseRepository = courseRepository;
+    private readonly ICourseService _courseService = courseService;
+
+    #region GET
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<CourseRegistrationForm>))]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> GetAll()
     {
-        private readonly DataContext _context = context;
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _context.Courses.ToListAsync());
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        try
         {
-            var course = await _context.Courses.FirstOrDefaultAsync(x => x.Id == id);   
-            if (course != null)
-            {
-                return Ok(course);
-            }
+            var courses = await _courseRepository.GetAll();
 
-            return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(courses);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateOne(CourseRegistrationForm form)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var courseEntity = new CourseEntity
-                    {
-                        Title = form.Title,
-                        Author = form.Author,
-                        Price = form.Price,
-                        DiscountPrice = form.DiscountPrice,
-                        Hours = form.Hours,
-                        BestSeller = form.BestSeller,
-                        LikesInProcent = form.LikesInProcent,
-                        LikesInNumbers = form.LikesInNumbers,
-                    };
-
-                    _context.Courses.Add(courseEntity);
-                    await _context.SaveChangesAsync();
-
-                    return Created("", (CourseModel)courseEntity);
-                }
-
-                return BadRequest();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-       
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return NoContent();
     }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(200, Type = typeof(CourseRegistrationForm))]
+    public async Task<IActionResult> GetById(int id)
+    {
+        try
+        {
+            if (!await _courseRepository.CourseExists(id))
+                return NotFound();
+
+            var course = await _courseRepository.GetById(id);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(course);
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return NoContent();
+    }
+    #endregion
+
+    #region CREATE
+    [HttpPost]
+    public async Task<IActionResult> CreateOne(CourseRegistrationForm form)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var courseExists = await _courseRepository.CourseExists(form.Title);
+            if (courseExists)
+                return Conflict("A course with the same Title already exists");
+
+            var course = await _courseService.CreateCourse(form);
+            if (course)
+                return Created("", course);
+            else
+                return StatusCode(500, "Failed to create the course");
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return NoContent();
+    }
+    #endregion
 }
