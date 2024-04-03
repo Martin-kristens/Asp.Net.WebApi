@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Infrastructure.Interfaces;
 
@@ -8,6 +9,6 @@ public interface ISubscribeRepository
     Task<ICollection<SubscriberEntity>> GetAllSubscribersAsync();
     Task<SubscriberEntity> GetOneSubscriberById(int id);
     Task<bool> CreateSubscriber(SubscriberEntity subscriber);
-    Task<bool> UpdateSubscriber(SubscriberEntity subscriber);
-    Task<bool> DeleteSubscriber(int id);
+    Task<bool> UpdateSubscriberAsync(SubscriberEntity subscriber);
+    Task<bool> DeleteSubscriberAsync(SubscriberEntity subscriber);
 }

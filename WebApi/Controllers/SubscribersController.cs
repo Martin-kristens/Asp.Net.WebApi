@@ -35,7 +35,7 @@ namespace WebApi.Controllers
                 if (subscriberExists)
                     return Conflict("There is already an subscriber with this email address");
 
-                var subscriber = await _subscriberService.CreateSubscriber(form);
+                var subscriber = await _subscriberService.CreateSubscriberAsync(form);
                 if (subscriber)
                     return Created("You are now subscribed", subscriber);
                 else
@@ -43,95 +43,94 @@ namespace WebApi.Controllers
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
             return NoContent();
-            //if (!string.IsNullOrEmpty(email))
-            //{
-            //    if (!await _context.Subscribers.AnyAsync(x => x.Email == email))
-            //    {
-            //        try
-            //        {
-            //            var subscriberEntity = new SubscriberEntity { Email = email };
-            //            _context.Subscribers.Add(subscriberEntity);
-            //            await _context.SaveChangesAsync();
+        }
+        #endregion
 
-            //            return Created("", null);
-            //        }
-            //        catch (Exception)
-            //        {
-            //            return Problem("Unable to create subscription");
-            //        }
-            //    }
+        #region READ
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _subscriberService.GetAllSubscribersAsync();
+                    if (result != null)
+                        return Ok(result);
+                    else 
+                        return NotFound("No subscribers was found");
+                }
+                return BadRequest();
+            }
+            catch (Exception ex) {Debug.WriteLine(ex.Message); }
+            return NoContent();
+        }
 
-            //    return Conflict("A subscriber with the same email already exists");
-            //}
-
-            //return BadRequest();
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOneAsync(int id)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var subscriber = await _subscriberService.GetOneSubscriberAsync(id);
+                    if (subscriber != null)
+                        return Ok(subscriber);
+                    else
+                        return NotFound($"No subscriber was found with ID {id}.");
+                }
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex){Debug.WriteLine(ex.Message);}
+            return StatusCode(500);
         }
 
         #endregion
 
-        #region READ
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-
-        //    var subscribers = await _context.Subscribers.ToListAsync();
-        //    if (subscribers.Count != 0)
-        //    {
-        //        return Ok(subscribers);
-        //    }
-
-        //    return NotFound();
-        //}
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetOne(int id)
-        //{
-        //    var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Id == id);
-        //    if (subscriber != null)
-        //    {
-        //        return Ok(subscriber);
-        //    }
-
-        //    return NotFound();
-        //}
-
-        #endregion
-
         #region UPDATE
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpdateOne(int id, string email)
-        //{
-        //    var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Id == id);
-        //    if (subscriber != null)
-        //    {
-        //        subscriber.Email = email;
-        //        _context.Subscribers.Update(subscriber);
-        //        await _context.SaveChangesAsync();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(int id, string email)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var updated = await _subscriberService.UpdateSubscriberAsync(id, email);
+                    if (updated)                 
+                        return NoContent();                 
+                    else
+                        return NotFound();
+                }
+                return BadRequest(ModelState);
+               
+            }
+            catch (Exception ex){Debug.WriteLine(ex.Message); }
+            return StatusCode(500);
 
-        //        return Ok(subscriber);
-        //    }
-
-        //    return NotFound();
-        //}
-
+        }
         #endregion
 
         #region DELETE
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Id == id);
-        //    if (subscriber != null)
-        //    {
-        //        _context.Subscribers.Remove(subscriber);
-        //        await _context.SaveChangesAsync();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var deleteSubscriber = await _subscriberService.DeleteSubscriberAsync(id);
+                    if (deleteSubscriber)
+                        return NoContent();
 
-        //        return Ok();
-        //    }
+                    else 
+                        return NotFound();
+                }
 
-        //    return NotFound();
-        //}
-
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex){Debug.WriteLine(ex.Message); }
+            return StatusCode(500);
+        } 
         #endregion
 
     }

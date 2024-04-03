@@ -7,15 +7,11 @@ using System.Diagnostics;
 
 namespace Infrastructure.Repositories;
 
-public class SubscribersRepository : ISubscribeRepository
+public class SubscribersRepository(DataContext context) : ISubscribeRepository
 {
-    private readonly DataContext _context;
+    private readonly DataContext _context = context;
 
-    public SubscribersRepository(DataContext context)
-    {
-        _context = context;
-    }
-
+    #region EXISTS
     public async Task<bool> SubscriberExists(string email)
     {
         try
@@ -25,7 +21,10 @@ public class SubscribersRepository : ISubscribeRepository
         catch (Exception ex) { Debug.WriteLine("Something went wrong" + ex.Message); }
         return false;
     }
+    #endregion
 
+
+    #region CREATE
     public async Task<bool> CreateSubscriber(SubscriberEntity subscriber)
     {
         try
@@ -37,24 +36,60 @@ public class SubscribersRepository : ISubscribeRepository
         catch (Exception ex) { Debug.WriteLine("Something went wrong" + ex.Message); }
         return false;
     }
+    #endregion
 
-    public Task<bool> DeleteSubscriber(int id)
+    #region READ
+    public async Task<ICollection<SubscriberEntity>> GetAllSubscribersAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Subscribers.ToListAsync();
+        }
+        catch (Exception ex){Debug.WriteLine(ex.Message); }
+        return null!;
     }
 
-    public Task<ICollection<SubscriberEntity>> GetAllSubscribersAsync()
+    public async Task<SubscriberEntity> GetOneSubscriberById(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Id == id);
+            if (subscriber != null)
+                return subscriber;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
     }
+    #endregion
 
-    public Task<SubscriberEntity> GetOneSubscriberById(int id)
+    #region UPDATE
+    public async Task<bool> UpdateSubscriberAsync(SubscriberEntity subscriber)
     {
-        throw new NotImplementedException();
-    }
+        try
+        {           
+            _context.Subscribers.Update(subscriber);
+            await _context.SaveChangesAsync();
 
-    public Task<bool> UpdateSubscriber(SubscriberEntity subscriber)
-    {
-        throw new NotImplementedException();
+            return true;          
+        }
+        catch (Exception ex){Debug.WriteLine(ex.Message); }
+        return false;
     }
+    #endregion
+
+    #region DELETE
+    public async Task<bool> DeleteSubscriberAsync(SubscriberEntity subscriber)
+    {
+        try
+        {
+            _context.Subscribers.Remove(subscriber);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception ex){Debug.WriteLine(ex.Message);}
+        return false;
+    }
+    #endregion
+
 }

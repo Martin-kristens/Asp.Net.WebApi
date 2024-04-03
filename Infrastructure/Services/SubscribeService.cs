@@ -14,24 +14,81 @@ public class SubscribeService : ISubscribeService
         _subscribeRepository = subscribeRepository;
     }
 
-    public async Task<bool> CreateSubscriber(SubscribeRegistrationForm form)
+    #region CREATE
+    public async Task<bool> CreateSubscriberAsync(SubscribeRegistrationForm form)
     {
         try
         {
             bool subscriberAlreadyExists = await _subscribeRepository.SubscriberExists(form.Email);
             if (subscriberAlreadyExists)
-            {
                 return subscriberAlreadyExists;
-            }
             else
             {
                 var subscriberEntity = new SubscriberEntity { Email = form.Email };
                 return await _subscribeRepository.CreateSubscriber(subscriberEntity);
-            }
-
-            
+            }            
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return false;
     }
+    #endregion
+
+    #region READ
+    public async Task<IEnumerable<SubscriberEntity>> GetAllSubscribersAsync()
+    {
+        try
+        {
+            return await _subscribeRepository.GetAllSubscribersAsync();
+        }
+        catch (Exception ex){ Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+
+    public async Task<SubscriberEntity> GetOneSubscriberAsync(int id)
+    {
+        try
+        {
+            var subscriberExists = await _subscribeRepository.GetOneSubscriberById(id);
+            if (subscriberExists != null)
+                return subscriberExists;
+        }
+        catch (Exception ex){ Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    #endregion
+
+    #region UPDATE
+    public async Task<bool> UpdateSubscriberAsync(int id, string email)
+    {
+        try
+        {
+            var subscriber = await _subscribeRepository.GetOneSubscriberById(id);
+            if ( subscriber != null )
+            {
+                subscriber.Email = email;
+                return await _subscribeRepository.UpdateSubscriberAsync(subscriber);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception ex){Debug.WriteLine(ex.Message); }
+        return false;
+    }
+    #endregion
+
+    #region DELETE
+    public async Task<bool> DeleteSubscriberAsync(int id)
+    {
+        try
+        {
+            var subscriberToDelete = await _subscribeRepository.GetOneSubscriberById(id);
+            if (subscriberToDelete != null)
+                return await _subscribeRepository.DeleteSubscriberAsync(subscriberToDelete);
+        }
+        catch (Exception ex){Debug.WriteLine(ex.Message); }
+        return false;
+    }
+    #endregion
 }
