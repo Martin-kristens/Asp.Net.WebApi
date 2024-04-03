@@ -11,7 +11,8 @@
     <div>You are subscribed</div>
 }
 
+
 <form asp-action="Index" asp-controller="Subscribers" method="post">
-    <input asp-for="@Model.Email" />
+    <input asp-for="Email" />
     <button type="submit">Subscribe</button>
 </form>
