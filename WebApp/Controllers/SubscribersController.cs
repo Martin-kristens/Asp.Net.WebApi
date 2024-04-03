@@ -13,6 +13,7 @@ public class SubscribersController : Controller
         return View(new SubscribeViewModel());
     }
 
+
     [HttpPost]
     public async Task<IActionResult> Index(SubscribeViewModel viewModel)
     {
@@ -20,10 +21,12 @@ public class SubscribersController : Controller
         {
             using var http = new HttpClient();
 
-            var url = $"https://localhost:7263/api/subscribers?email={viewModel.Email}";
-            var request = new HttpRequestMessage(HttpMethod.Post, url);  
-            
-            var response = await http.SendAsync(request);
+            var url = "https://localhost:7263/api/subscribers";
+            var json = JsonConvert.SerializeObject(viewModel);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");  
+
+            var response = await http.PostAsync(url, data);
+
             if (response.IsSuccessStatusCode)
             {
                 viewModel.IsSubscribed = true;
