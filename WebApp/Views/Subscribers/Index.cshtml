@@ -11,8 +11,22 @@
     <div>You are subscribed</div>
 }
 
+<section class="subscriber">
+    <div class="container">
+        <h2>Don't Want to Miss Anything?</h2>
 
-<form asp-action="Index" asp-controller="Subscribers" method="post">
-    <input asp-for="Email" />
-    <button type="submit">Subscribe</button>
-</form>
+        <div class="subscribeBoxe">
+            <h5>Sign up for Newsletters</h5>
+
+            <form asp-action="Index" asp-controller="Subscribers" method="post">
+         
+                <div class="input">
+                    <input asp-for="Email" />
+                    <button class="btn btn-primary" type="submit">Subscribe</button>
+                </div>
+                <p>* Yes, I agree to the terms and privacy policy.</p>
+            </form>
+        </div>
+    </div>
+
+</section>

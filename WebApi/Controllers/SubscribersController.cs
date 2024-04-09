@@ -1,16 +1,13 @@
-﻿using Infrastructure.Contexts;
-using Infrastructure.Dtos;
-using Infrastructure.Entities;
+﻿using Infrastructure.Dtos;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class SubscribersController : ControllerBase
     {
         private readonly ISubscribeRepository _subscribeRepository;
@@ -33,7 +30,7 @@ namespace WebApi.Controllers
 
                 var subscriberExists = await _subscribeRepository.SubscriberExists(form.Email);
                 if (subscriberExists)
-                    return Conflict("There is already an subscriber with this email address");
+                    return Conflict("You have already been subscribed");
 
                 var subscriber = await _subscriberService.CreateSubscriberAsync(form);
                 if (subscriber)

@@ -1,1 +1,33 @@
-﻿
+﻿.subscribeBoxe {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+  /*  align-items: center;
+    justify-content: center;*/
+}
+
+input {
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+/*.boxes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.boxes input[type="checkbox"],
+.boxes label {
+    flex-basis: calc(33.33% - 10px);  Justera bredden för att passa tre kolumner med mellanrum 
+    margin-right: 10px;  Lägg till mellanrum mellan elementen 
+    margin-bottom: 10px;  Lägg till mellanrum mellan rader 
+}
+*/
