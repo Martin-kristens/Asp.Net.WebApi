@@ -1,34 +1,58 @@
-﻿using Infrastructure.Dtos;
+﻿using Infrastructure.Contexts;
+using Infrastructure.Dtos;
+using Infrastructure.Factories;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CoursesController(ICourseRepository courseRepository, ICourseService courseService) : ControllerBase
+public class CoursesController(ICourseRepository courseRepository, ICourseService courseService, DataContext context) : ControllerBase
 {
     private readonly ICourseRepository _courseRepository = courseRepository;
     private readonly ICourseService _courseService = courseService;
+    private readonly DataContext _context = context;
 
     #region GET
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<CourseRegistrationForm>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<CourseDto>))]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(string category = "")
     {
-        try
+        var query = _context.Courses.Include(i => i.Category).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(category) && category != "all")
         {
-            var courses = await _courseRepository.GetAll();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(courses);
+            query = query.Where(x => x.Category.CategoryName == category);
         }
-        catch (Exception ex) { Debug.WriteLine(ex.Message); }
-        return NoContent();
+
+
+        query = query.OrderByDescending(o => o.LastUpdated);
+
+        var courses = await query.ToListAsync();
+
+        var response = new CourseResultDto
+        {
+            Succeeded = true,
+            Courses = CourseFactory.Create(courses)
+        };
+
+        return Ok(response);
+
+        //try
+        //{
+        //    var courses = await _courseRepository.GetAll();
+
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    return Ok(courses);
+        //}
+        //catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        //return NoContent();
     }
 
     [HttpGet("{id}")]
