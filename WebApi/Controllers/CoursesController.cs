@@ -20,13 +20,19 @@ public class CoursesController(ICourseRepository courseRepository, ICourseServic
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<CourseDto>))]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> GetAll(string category = "")
+    public async Task<IActionResult> GetAll(string category = "", string searchQuery = "")
     {
         var query = _context.Courses.Include(i => i.Category).AsQueryable();
-
+        //dropdownsökning
         if (!string.IsNullOrWhiteSpace(category) && category != "all")
         {
             query = query.Where(x => x.Category.CategoryName == category);
+        }
+
+        //fritextsökning
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(x => x.Title.Contains(searchQuery) || x.Author!.Contains(searchQuery));
         }
 
 
