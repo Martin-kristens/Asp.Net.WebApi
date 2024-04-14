@@ -11,4 +11,5 @@ public class DataContext : DbContext
 
     public DbSet<CourseEntity> Courses { get; set; }
     public DbSet<SubscriberEntity> Subscribers { get; set; }
+    public DbSet<CategoryEntity> Categories { get; set; }
 }

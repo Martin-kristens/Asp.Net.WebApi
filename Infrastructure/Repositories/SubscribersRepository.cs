@@ -49,11 +49,11 @@ public class SubscribersRepository(DataContext context) : ISubscribeRepository
         return null!;
     }
 
-    public async Task<SubscriberEntity> GetOneSubscriberById(int id)
+    public async Task<SubscriberEntity> GetOneSubscriberByEmail(string email)
     {
         try
         {
-            var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Id == id);
+            var subscriber = await _context.Subscribers.FirstOrDefaultAsync(x => x.Email == email);
             if (subscriber != null)
                 return subscriber;
         }
@@ -90,6 +90,7 @@ public class SubscribersRepository(DataContext context) : ISubscribeRepository
         catch (Exception ex){Debug.WriteLine(ex.Message);}
         return false;
     }
+
     #endregion
 
 }

@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Infrastructure.Entities;
 
-namespace Infrastructure.Entities;
+namespace Infrastructure.Dtos;
 
-public class CourseEntity
+public class CourseDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
@@ -13,12 +13,8 @@ public class CourseEntity
     public bool BestSeller { get; set; }
     public string? LikesInProcent { get; set; }
     public string? LikesInNumbers { get; set; }
-
-    public DateTime Created { get; set; }
-    public DateTime LastUpdated { get; set; }
     public string? ImageUrl { get; set; }
     public string? BigImageUrl { get; set; }
 
-    public int CategoryId { get; set; }
-    public CategoryEntity Category { get; set; } = null!;
+    public string Category { get; set; } = null!;
 }
