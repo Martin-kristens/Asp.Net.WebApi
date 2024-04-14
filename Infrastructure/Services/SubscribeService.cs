@@ -44,11 +44,11 @@ public class SubscribeService : ISubscribeService
         return null!;
     }
 
-    public async Task<SubscriberEntity> GetOneSubscriberAsync(int id)
+    public async Task<SubscriberEntity> GetOneSubscriberAsync(string email)
     {
         try
         {
-            var subscriberExists = await _subscribeRepository.GetOneSubscriberById(id);
+            var subscriberExists = await _subscribeRepository.GetOneSubscriberByEmail(email);
             if (subscriberExists != null)
                 return subscriberExists;
         }
@@ -62,7 +62,7 @@ public class SubscribeService : ISubscribeService
     {
         try
         {
-            var subscriber = await _subscribeRepository.GetOneSubscriberById(id);
+            var subscriber = await _subscribeRepository.GetOneSubscriberByEmail(email);
             if ( subscriber != null )
             {
                 subscriber.Email = email;
@@ -79,11 +79,11 @@ public class SubscribeService : ISubscribeService
     #endregion
 
     #region DELETE
-    public async Task<bool> DeleteSubscriberAsync(int id)
+    public async Task<bool> DeleteSubscriberAsync(string email)
     {
         try
         {
-            var subscriberToDelete = await _subscribeRepository.GetOneSubscriberById(id);
+            var subscriberToDelete = await _subscribeRepository.GetOneSubscriberByEmail(email);
             if (subscriberToDelete != null)
                 return await _subscribeRepository.DeleteSubscriberAsync(subscriberToDelete);
         }
