@@ -64,17 +64,17 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOneAsync(int id)
+        public async Task<IActionResult> GetOneAsync(string email)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var subscriber = await _subscriberService.GetOneSubscriberAsync(id);
+                    var subscriber = await _subscriberService.GetOneSubscriberAsync(email);
                     if (subscriber != null)
                         return Ok(subscriber);
                     else
-                        return NotFound($"No subscriber was found with ID {id}.");
+                        return NotFound($"No subscriber was found with Email {email}.");
                 }
                 return BadRequest(ModelState);
             }
@@ -109,13 +109,13 @@ namespace WebApi.Controllers
 
         #region DELETE
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(string email)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var deleteSubscriber = await _subscriberService.DeleteSubscriberAsync(id);
+                    var deleteSubscriber = await _subscriberService.DeleteSubscriberAsync(email);
                     if (deleteSubscriber)
                         return NoContent();
 
